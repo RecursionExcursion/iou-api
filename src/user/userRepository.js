@@ -1,9 +1,11 @@
 import db from "../../db/conn.js";
 
+const collectionName = "users";
+
 const userRepository = {
   saveNewUser: async (newUser) => {
     try {
-      await db.collection("users").insertOne(newUser);
+      await db.collection(collectionName).insertOne(newUser);
       return true;
     } catch {
       return false;
@@ -11,7 +13,17 @@ const userRepository = {
   },
 
   getAllUsers: async () => {
-    return await db.collection("users").find({}).toArray();
+    return await db.collection(collectionName).find({}).toArray();
+  },
+
+  getUserByUsername: async (username) => {
+    return await db.collection(collectionName).findOne({ username });
+  },
+
+  deleteUser: async (username) => {
+    return await db.collection(collectionName).deleteOne({
+      username: username,
+    });
   },
 };
 

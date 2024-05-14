@@ -12,6 +12,14 @@ const userService = {
   getAllUsers: async () => {
     return await userRepository.getAllUsers();
   },
+
+  getUserbyUsername: async (username) => {
+    return await userRepository.getUserByUsername(username);
+  },
+
+  deleteUser: async (username) => {
+    return await userRepository.deleteUser(username);
+  },
 };
 
 export default userService;

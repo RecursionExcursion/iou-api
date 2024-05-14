@@ -4,12 +4,10 @@ import userService from "./userService.js";
 const router = express.Router();
 
 //Create
-router.post("/", async (req, res) => {
+router.post("/", (req, res) => {
   try {
     const { username, email, password } = req.body;
     userService.createNewUser(username, email, password).then((resp) => {
-      console.log({ resp: resp });
-
       //TODO make the response more informative and use codes
       resp ? res.send("User Created") : res.send("User Not Created");
     });
@@ -20,36 +18,34 @@ router.post("/", async (req, res) => {
 
 //Read
 /* Get all users */
-router.get("/", async (req, res) => {
+router.get("/", (req, res) => {
   userService.getAllUsers().then((resp) => {
     res.send(resp);
   });
 });
 
-router.get("/:username", async (req, res) => {
+/* Get user by username */
+router.get("/:username", (req, res) => {
+  const username = req.params.username;
 
-
-  const foo = req.params.username;
-  console.log({ foo});
-  
-  // const { username } = req.body;
-  // let user = await db.collection("users").findOne({ username });
-  // res.send(user);
+  userService.getUserbyUsername(username).then((resp) => {
+    res.send(resp);
+  });
 });
 
-// //Delete
-// router.delete("/", async (req, res) => {
-//   const { username } = req.body;
+//Delete
+router.delete("/:username", (req, res) => {
+  const username = req.params.username;
 
-//   const resp = await db.collection("users").deleteOne({
-//     username: username,
-//   });
+  console.log({ username });
 
-//   console.log({ resp });
+  userService.deleteUser(username).then((resp) => {
+    console.log({ resp });
 
-//   resp.deletedCount === 1
-//     ? res.send("User Deleted")
-//     : res.send("No User Deleted");
-// });
+    resp.deletedCount === 1
+      ? res.send("User Deleted")
+      : res.send("No User Deleted");
+  });
+});
 
 export default router;
