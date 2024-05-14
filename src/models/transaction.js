@@ -1,5 +1,6 @@
 export class Transaction {
     id = "";
+    transactionId = "";
     senderId = "";
     recipientId = "";
     amount = "";

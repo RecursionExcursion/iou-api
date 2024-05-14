@@ -1,6 +1,6 @@
 import "./loadEnviroment.js";
 import express from "express";
-import userRouter from "./src/user/controller.js";
+import userRouter from "./src/user/userController.js";
 
 const app = express();
 app.use(express.json())
