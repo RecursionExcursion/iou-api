@@ -1,16 +1,15 @@
 const baseUser = {
   username: "",
-  email: "",
   password: "",
+  balance: 0,
   friendIds: [],
   transactions: [],
 };
 
-export const createNewUserFactory = (username, email, password) => {
+export const newUserFactory = (username, password) => {
   return {
     ...baseUser,
     username,
-    email,
     password,
   };
 };

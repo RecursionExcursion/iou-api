@@ -1,28 +1,25 @@
-export class Transaction {
-    id = "";
-    transactionId = "";
-    senderId = "";
-    recipientId = "";
-    amount = "";
-    pending = "";
-    timestamp = "";
-    resolutionTimestamp = "";
-  
-    constructor(
-      id,
-      senderId,
-      recipientId,
-      amount,
-      pending,
-      timestamp,
-      resolutionTimestamp
-    ) {
-      this.id = id;
-      this.senderId = senderId;
-      this.recipientId = recipientId;
-      this.amount = amount;
-      this.pending = pending;
-      this.timestamp = timestamp;
-      this.resolutionTimestamp = resolutionTimestamp;
-    }
-  }
+import { v4 as uuidv4 } from "uuid";
+
+const baseTransaction = {
+  transactionId: "",
+  senderId: "",
+  receiverId: "",
+  type: "",
+  amount: "",
+  pending: "",
+  timestamp: "",
+  resolutionTimestamp: "",
+};
+
+export const newTransactionFactory = (senderId, receiverId, amount, type) => {
+  return {
+    ...baseTransaction,
+    transactionId: uuidv4(),
+    senderId,
+    receiverId,
+    type,
+    amount,
+    pending: true,
+    timestamp: new Date().toISOString(),
+  };
+};
