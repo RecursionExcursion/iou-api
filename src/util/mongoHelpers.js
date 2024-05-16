@@ -1,5 +1,3 @@
-import { ObjectId } from 'mongodb';
+import { ObjectId } from "mongodb";
 
-export const getObjectId = (id) => {
-  return ObjectId.createFromHexString(id);
-}
+export const getObjectId = (id) => ObjectId.createFromHexString(id);

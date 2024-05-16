@@ -17,7 +17,7 @@ const userRepository = {
   updateUser: async (id, updatedField) => {
     return await db
       .collection(collectionName)
-      .updateOne({ _id: getObjectId(id) }, { $set: updatedField });
+      .updateOne({ _id: id }, { $set: updatedField });
   },
 
   getAllUsers: async () => {
@@ -29,7 +29,9 @@ const userRepository = {
   },
 
   getUserById: async (id) => {
-    return await db.collection(collectionName).findOne({ _id: getObjectId(id) });
+    return await db
+      .collection(collectionName)
+      .findOne({ _id: getObjectId(id) });
   },
 
   deleteUser: async (username) => {

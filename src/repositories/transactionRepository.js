@@ -33,7 +33,11 @@ const transactionRepository = {
     return await db.collection(collectionName).find(filter).toArray();
   },
 
-  updateTransaction: async () => {},
+  updateTransaction: async (transaction) => {
+    return await db
+      .collection(collectionName)
+      .updateOne({ _id: transaction._id }, { $set: transaction });
+  },
 
   deleteTransaction: async (transactionId) => {
     return await db

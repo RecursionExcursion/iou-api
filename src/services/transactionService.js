@@ -54,12 +54,21 @@ const transactionService = {
       transactionId
     );
 
+    if (transaction.receiverId !== receiverId) {
+      return createServerResponseDto(false, "User not authorized", {}, 401);
+    }
+
     if (!transaction) {
       return createServerResponseDto(false, "Transaction not found", {}, 404);
     }
 
-    if (transaction.receiverId !== receiverId) {
-      return createServerResponseDto(false, "User not authorized", {}, 401);
+    if (!transaction.pending) {
+      return createServerResponseDto(
+        false,
+        "Transaction already resolved",
+        {},
+        400
+      );
     }
 
     //TODO need to add a check to see if the transaction is already resolved
@@ -67,34 +76,61 @@ const transactionService = {
     //Maybe need a more robust transaction object
 
     if (accept) {
-      transaction.pending = false;
-      await transactionRepository.updateTransaction(transaction);
+      const resovledTransaction = resolveTransaction(transaction);
 
-      if (transaction.type === "iou") {
+      // transaction.pending = false;
+      // transaction.resolutionTimestamp = new Date().toISOString();
+      await transactionRepository.updateTransaction(resovledTransaction);
+
+      if (resovledTransaction.type === "iou") {
         await userService.updateUserBalance(
-          transaction.senderId,
-          -transaction.amount
+          resovledTransaction.senderId,
+          -resovledTransaction.amount
         );
         await userService.updateUserBalance(
-          transaction.receiverId,
-          transaction.amount
+          resovledTransaction.receiverId,
+          resovledTransaction.amount
         );
-      } else if (transaction.type === "uoi") {
+      } else if (resovledTransaction.type === "uoi") {
         await userService.updateUserBalance(
-          transaction.senderId,
-          transaction.amount
+          resovledTransaction.senderId,
+          resovledTransaction.amount
         );
         await userService.updateUserBalance(
-          transaction.receiverId,
-          -transaction.amount
+          resovledTransaction.receiverId,
+          -resovledTransaction.amount
         );
       }
       return createServerResponseDto(true, "Transaction accepted", {}, 200);
     } else {
-      transactionRepository.deleteTransaction(transactionId);
+      removeTransaction(transaction);
       return createServerResponseDto(true, "Transaction rejected", {}, 200);
     }
   },
 };
 
 export default transactionService;
+
+const resolveTransaction = (transaction) => {
+  const copy = { ...transaction };
+  copy.pending = false;
+  copy.resolutionTimestamp = new Date().toISOString();
+  return copy;
+};
+
+const removeTransaction = (transaction) => {
+  transactionRepository.deleteTransaction(transaction.transactionId);
+
+  const sender = userRepository.getUserById(transaction.senderId);
+  const receiver = userRepository.getUserById(transaction.receiverId);
+
+  sender.transactions = sender.transactions.filter(
+    (id) => id !== transaction.transactionId
+  );
+  receiver.transactions = receiver.transactions.filter(
+    (id) => id !== transaction.transactionId
+  );
+
+  userRepository.updateUser(sender._id, sender);
+  userRepository.updateUser(receiver._id, receiver);
+};

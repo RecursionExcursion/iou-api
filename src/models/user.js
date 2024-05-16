@@ -4,6 +4,7 @@ const baseUser = {
   balance: 0,
   friendIds: [],
   transactions: [],
+  messages: [],
 };
 
 export const newUserFactory = (username, password) => {
@@ -11,12 +12,5 @@ export const newUserFactory = (username, password) => {
     ...baseUser,
     username,
     password,
-  };
-};
-
-export const buildExistingUser = (user) => {
-  return {
-    ...baseUser,
-    ...user,
   };
 };
